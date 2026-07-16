@@ -178,6 +178,18 @@
   .start-diff-card.hard.active { border-color: var(--o-color); box-shadow: 0 0 16px rgba(255,61,127,0.2); }
   .start-diff-card.hard .diff-icon { color: var(--o-color); }
 
+  .start-hint {
+    color: var(--text-dim);
+    font-size: 0.78rem;
+    margin-top: -24px;
+    margin-bottom: 28px;
+    text-align: center;
+    min-height: 1em;
+    transition: color 0.2s;
+  }
+  .start-hint.first { color: var(--x-color); }
+  .start-hint.second { color: var(--o-color); }
+
   .btn-start {
     background: linear-gradient(135deg, var(--x-color), #0090cc);
     color: var(--bg);
@@ -461,15 +473,20 @@
 
   <div class="start-section-label">Сторона</div>
   <div class="start-diff-picker">
-    <div class="start-diff-card active" data-side="X" onclick="setSide('X')" style="min-width:100px">
-      <div class="diff-icon" style="color:var(--x-color);font-size:1.8rem">&#10005;</div>
+    <div class="start-diff-card active" data-side="X" onclick="setSide('X')" style="min-width:110px">
+      <div class="diff-icon" style="margin-bottom:2px">
+        <svg width="28" height="28" viewBox="0 0 100 100"><line x1="20" y1="20" x2="80" y2="80" stroke="var(--x-color)" stroke-width="12" stroke-linecap="round"/><line x1="80" y1="20" x2="20" y2="80" stroke="var(--x-color)" stroke-width="12" stroke-linecap="round"/></svg>
+      </div>
       <div class="diff-name">Крестики</div>
     </div>
-    <div class="start-diff-card" data-side="O" onclick="setSide('O')" style="min-width:100px">
-      <div class="diff-icon" style="color:var(--o-color);font-size:1.8rem">&#9711;</div>
+    <div class="start-diff-card" data-side="O" onclick="setSide('O')" style="min-width:110px">
+      <div class="diff-icon" style="margin-bottom:2px">
+        <svg width="28" height="28" viewBox="0 0 100 100"><circle cx="50" cy="50" r="30" fill="none" stroke="var(--o-color)" stroke-width="12" stroke-linecap="round"/></svg>
+      </div>
       <div class="diff-name">Нолики</div>
     </div>
   </div>
+  <div class="start-hint" id="start-hint">Вы ходите первым</div>
 
   <div class="start-section-label">Сложность</div>
   <div class="start-diff-picker">
@@ -537,6 +554,8 @@ let botMark = 'O';
 
 const boardEl = document.getElementById('board');
 const statusEl = document.getElementById('status');
+const subtitleEl = document.getElementById('subtitle');
+const startHintEl = document.getElementById('start-hint');
 
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -717,9 +736,8 @@ function setSide(side) {
   document.querySelectorAll('[data-side]').forEach(el => {
     el.classList.toggle('active', el.dataset.side === side);
   });
-  subtitleEl.textContent = side === 'X'
-    ? 'Вы играете за крестики. Бот — за нолики.'
-    : 'Вы играете за нолики. Бот — за крестики.';
+  startHintEl.textContent = side === 'X' ? 'Вы ходите первым' : 'Бот ходит первым';
+  startHintEl.className = 'start-hint ' + (side === 'X' ? 'first' : 'second');
   resetGame();
 }
 

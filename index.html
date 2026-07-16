@@ -50,22 +50,15 @@
 
   /* ── Start Screen ── */
   .start-logo {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 4px;
-    margin-bottom: 6px;
-  }
-  .start-logo svg {
-    width: 56px;
-    height: 56px;
-  }
-  .logo-sep {
-    font-size: 2.5rem;
+    font-size: 4.5rem;
     font-weight: 800;
-    color: var(--text-dim);
-    line-height: 1;
+    letter-spacing: 0.06em;
+    margin-bottom: 6px;
+    text-align: center;
+    line-height: 1.1;
   }
+  .start-logo .x { color: var(--x-color); }
+  .start-logo .o { color: var(--o-color); }
 
   .start-tagline {
     color: var(--text-dim);
@@ -463,7 +456,7 @@
   .diff-btn:hover { border-color: var(--x-color); }
 
   @media (max-width: 400px) {
-    .start-logo svg { width: 42px; height: 42px; }
+    .start-logo { font-size: 3rem; }
     .start-diff-card { min-width: 78px; padding: 10px 10px; }
     .start-diff-card .diff-icon svg { width: 24px; height: 24px; }
     .side-card { width: 110px; padding: 12px 8px; }
@@ -485,17 +478,18 @@
 
 <!-- ═══════ START SCREEN ═══════ -->
 <div class="screen active" id="screen-start">
+  <div class="start-logo"><span class="x">✕</span>&nbsp;:&nbsp;<span class="o">○</span></div>
   <div class="start-tagline">Крестики-Нолики с ботом</div>
 
   <div class="start-grid">
-    <div class="sg-cell"><svg viewBox="0 0 100 100"><line x1="10" y1="10" x2="90" y2="90" stroke="var(--x-color)" stroke-width="10" stroke-linecap="round"/><line x1="90" y1="10" x2="10" y2="90" stroke="var(--x-color)" stroke-width="10" stroke-linecap="round"/></svg></div>
+    <div class="sg-cell"><svg viewBox="0 0 100 100"><line x1="20" y1="20" x2="80" y2="80" stroke="var(--x-color)" stroke-width="10" stroke-linecap="round"/><line x1="80" y1="20" x2="20" y2="80" stroke="var(--x-color)" stroke-width="10" stroke-linecap="round"/></svg></div>
     <div class="sg-cell"></div>
-    <div class="sg-cell"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="none" stroke="var(--o-color)" stroke-width="10"/></svg></div>
+    <div class="sg-cell"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="36" fill="none" stroke="var(--o-color)" stroke-width="10"/></svg></div>
     <div class="sg-cell"></div>
-    <div class="sg-cell"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="none" stroke="var(--o-color)" stroke-width="10"/></svg></div>
-    <div class="sg-cell"><svg viewBox="0 0 100 100"><line x1="10" y1="10" x2="90" y2="90" stroke="var(--x-color)" stroke-width="10" stroke-linecap="round"/><line x1="90" y1="10" x2="10" y2="90" stroke="var(--x-color)" stroke-width="10" stroke-linecap="round"/></svg></div>
-    <div class="sg-cell"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="none" stroke="var(--o-color)" stroke-width="10"/></svg></div>
-    <div class="sg-cell"><svg viewBox="0 0 100 100"><line x1="10" y1="10" x2="90" y2="90" stroke="var(--x-color)" stroke-width="10" stroke-linecap="round"/><line x1="90" y1="10" x2="10" y2="90" stroke="var(--x-color)" stroke-width="10" stroke-linecap="round"/></svg></div>
+    <div class="sg-cell"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="36" fill="none" stroke="var(--o-color)" stroke-width="10"/></svg></div>
+    <div class="sg-cell"><svg viewBox="0 0 100 100"><line x1="20" y1="20" x2="80" y2="80" stroke="var(--x-color)" stroke-width="10" stroke-linecap="round"/><line x1="80" y1="20" x2="20" y2="80" stroke="var(--x-color)" stroke-width="10" stroke-linecap="round"/></svg></div>
+    <div class="sg-cell"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="36" fill="none" stroke="var(--o-color)" stroke-width="10"/></svg></div>
+    <div class="sg-cell"><svg viewBox="0 0 100 100"><line x1="20" y1="20" x2="80" y2="80" stroke="var(--x-color)" stroke-width="10" stroke-linecap="round"/><line x1="80" y1="20" x2="20" y2="80" stroke="var(--x-color)" stroke-width="10" stroke-linecap="round"/></svg></div>
     <div class="sg-cell"></div>
   </div>
 
@@ -503,13 +497,13 @@
   <div class="start-diff-picker">
     <div class="start-diff-card active" data-side="X" onclick="setSide('X')" style="min-width:110px">
       <div class="diff-icon" style="margin-bottom:2px">
-        <svg width="28" height="28" viewBox="0 0 100 100"><line x1="10" y1="10" x2="90" y2="90" stroke="var(--x-color)" stroke-width="12" stroke-linecap="round"/><line x1="90" y1="10" x2="10" y2="90" stroke="var(--x-color)" stroke-width="12" stroke-linecap="round"/></svg>
+        <svg width="28" height="28" viewBox="0 0 100 100"><line x1="20" y1="20" x2="80" y2="80" stroke="var(--x-color)" stroke-width="12" stroke-linecap="round"/><line x1="80" y1="20" x2="20" y2="80" stroke="var(--x-color)" stroke-width="12" stroke-linecap="round"/></svg>
       </div>
       <div class="diff-name">Крестики</div>
     </div>
     <div class="start-diff-card" data-side="O" onclick="setSide('O')" style="min-width:110px">
       <div class="diff-icon" style="margin-bottom:2px">
-        <svg width="28" height="28" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="none" stroke="var(--o-color)" stroke-width="12" stroke-linecap="round"/></svg>
+        <svg width="28" height="28" viewBox="0 0 100 100"><circle cx="50" cy="50" r="36" fill="none" stroke="var(--o-color)" stroke-width="12" stroke-linecap="round"/></svg>
       </div>
       <div class="diff-name">Нолики</div>
     </div>
@@ -617,8 +611,8 @@ function renderMark(index, mark) {
   const cell = boardEl.children[index];
   cell.classList.add('taken');
   cell.innerHTML = mark === 'X'
-    ? `<svg viewBox="0 0 100 100"><line x1="10" y1="10" x2="90" y2="90" stroke="var(--x-color)" stroke-width="10" stroke-linecap="round"/><line x1="90" y1="10" x2="10" y2="90" stroke="var(--x-color)" stroke-width="10" stroke-linecap="round"/></svg>`
-    : `<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="none" stroke="var(--o-color)" stroke-width="10" stroke-linecap="round"/></svg>`;
+    ? `<svg viewBox="0 0 100 100"><line x1="20" y1="20" x2="80" y2="80" stroke="var(--x-color)" stroke-width="10" stroke-linecap="round"/><line x1="80" y1="20" x2="20" y2="80" stroke="var(--x-color)" stroke-width="10" stroke-linecap="round"/></svg>`
+    : `<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="30" fill="none" stroke="var(--o-color)" stroke-width="10" stroke-linecap="round"/></svg>`;
 }
 
 function checkWin(b, mark) {

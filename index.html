@@ -32,66 +32,237 @@
     overflow-x: hidden;
   }
 
-  h1 {
-    font-size: 2.4rem;
-    font-weight: 700;
-    letter-spacing: 0.04em;
-    margin-bottom: 8px;
+  /* ── Screens ── */
+  .screen {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 440px;
+    animation: fadeIn 0.4s ease;
+  }
+  .screen.active { display: flex; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── Start Screen ── */
+  .start-logo {
+    font-size: 4.5rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    margin-bottom: 6px;
+    text-align: center;
+    line-height: 1.1;
+  }
+  .start-logo .x { color: var(--x-color); }
+  .start-logo .o { color: var(--o-color); }
+
+  .start-tagline {
+    color: var(--text-dim);
+    font-size: 1rem;
+    margin-bottom: 40px;
     text-align: center;
   }
 
+  .start-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 56px);
+    gap: 8px;
+    margin-bottom: 40px;
+  }
+  .start-grid .sg-cell {
+    width: 56px; height: 56px;
+    border-radius: 10px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: floatIn 0.5s ease backwards;
+  }
+  .start-grid .sg-cell:nth-child(1) { animation-delay: 0.05s; }
+  .start-grid .sg-cell:nth-child(2) { animation-delay: 0.10s; }
+  .start-grid .sg-cell:nth-child(3) { animation-delay: 0.15s; }
+  .start-grid .sg-cell:nth-child(4) { animation-delay: 0.20s; }
+  .start-grid .sg-cell:nth-child(5) { animation-delay: 0.25s; }
+  .start-grid .sg-cell:nth-child(6) { animation-delay: 0.30s; }
+  .start-grid .sg-cell:nth-child(7) { animation-delay: 0.35s; }
+  .start-grid .sg-cell:nth-child(8) { animation-delay: 0.40s; }
+  .start-grid .sg-cell:nth-child(9) { animation-delay: 0.45s; }
+
+  @keyframes floatIn {
+    from { opacity: 0; transform: scale(0.7); }
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  .start-grid .sg-cell svg {
+    width: 32px; height: 32px;
+  }
+
+  .btn-start {
+    background: linear-gradient(135deg, var(--x-color), #0090cc);
+    color: var(--bg);
+    border: none;
+    border-radius: 14px;
+    padding: 16px 52px;
+    font-size: 1.15rem;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    letter-spacing: 0.04em;
+    transition: transform 0.15s, box-shadow 0.2s;
+    box-shadow: 0 4px 24px rgba(0, 212, 255, 0.25);
+  }
+  .btn-start:hover {
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 8px 32px rgba(0, 212, 255, 0.35);
+  }
+  .btn-start:active {
+    transform: translateY(0) scale(0.98);
+  }
+
+  /* ── Game Screen ── */
+  h1 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    margin-bottom: 4px;
+    text-align: center;
+  }
   h1 .x { color: var(--x-color); }
   h1 .o { color: var(--o-color); }
 
   .subtitle {
     color: var(--text-dim);
-    font-size: 0.95rem;
-    margin-bottom: 32px;
+    font-size: 0.88rem;
+    margin-bottom: 20px;
     text-align: center;
   }
 
+  /* Side Picker */
+  .side-picker {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+    justify-content: center;
+  }
+
+  .side-card {
+    width: 130px;
+    padding: 16px 12px;
+    border-radius: 14px;
+    border: 2px solid var(--border);
+    background: var(--surface);
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .side-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 12px;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .side-card.x-card::before { background: radial-gradient(circle at 50% 30%, rgba(0,212,255,0.15), transparent 70%); }
+  .side-card.o-card::before { background: radial-gradient(circle at 50% 30%, rgba(255,61,127,0.15), transparent 70%); }
+
+  .side-card:hover { transform: translateY(-3px); }
+  .side-card:hover::before { opacity: 1; }
+
+  .side-card.active.x-card {
+    border-color: var(--x-color);
+    box-shadow: 0 0 20px rgba(0, 212, 255, 0.2);
+  }
+  .side-card.active.x-card::before { opacity: 1; }
+
+  .side-card.active.o-card {
+    border-color: var(--o-color);
+    box-shadow: 0 0 20px rgba(255, 61, 127, 0.2);
+  }
+  .side-card.active.o-card::before { opacity: 1; }
+
+  .side-card .mark-icon {
+    font-size: 2.4rem;
+    font-weight: 800;
+    margin-bottom: 6px;
+    position: relative;
+    z-index: 1;
+  }
+  .side-card.x-card .mark-icon { color: var(--x-color); }
+  .side-card.o-card .mark-icon { color: var(--o-color); }
+
+  .side-card .mark-label {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text-dim);
+    position: relative;
+    z-index: 1;
+  }
+  .side-card.active .mark-label { color: var(--text); }
+
+  .side-card .vs-badge {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    font-size: 0.6rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 2px 5px;
+    border-radius: 4px;
+    background: var(--border);
+    color: var(--text-dim);
+    z-index: 1;
+  }
+
+  /* Scoreboard */
   .scoreboard {
     display: flex;
-    gap: 32px;
-    margin-bottom: 28px;
+    gap: 28px;
+    margin-bottom: 20px;
   }
-
   .score-card {
     text-align: center;
-    min-width: 80px;
+    min-width: 72px;
   }
-
   .score-card .label {
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     text-transform: uppercase;
     letter-spacing: 0.12em;
     color: var(--text-dim);
-    margin-bottom: 4px;
+    margin-bottom: 2px;
   }
-
   .score-card .value {
-    font-size: 2rem;
+    font-size: 1.8rem;
     font-weight: 700;
     font-variant-numeric: tabular-nums;
   }
-
   .score-card.player .value { color: var(--x-color); }
   .score-card.draw .value { color: var(--text-dim); }
   .score-card.bot .value { color: var(--o-color); }
 
   .status {
-    font-size: 1.15rem;
+    font-size: 1.1rem;
     font-weight: 600;
-    margin-bottom: 20px;
-    min-height: 32px;
+    margin-bottom: 16px;
+    min-height: 28px;
     text-align: center;
     transition: color 0.3s;
   }
-
   .status.win { color: var(--win-glow); }
   .status.lose { color: var(--o-color); }
   .status.draw { color: var(--text-dim); }
 
+  /* Board */
   .board {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -99,172 +270,93 @@
     background: var(--border);
     border-radius: 16px;
     padding: 6px;
-    width: min(360px, calc(100vw - 48px));
+    width: min(340px, calc(100vw - 48px));
     aspect-ratio: 1;
     box-shadow: 0 0 60px rgba(0, 212, 255, 0.05), 0 0 60px rgba(255, 61, 127, 0.05);
   }
-
   .cell {
     background: var(--surface);
     border: none;
     border-radius: 10px;
     cursor: pointer;
-    font-size: 0;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: background 0.15s, transform 0.1s;
-    position: relative;
-    overflow: hidden;
   }
-
-  .cell:hover:not(.taken) {
-    background: var(--cell-hover);
-    transform: scale(1.03);
-  }
-
-  .cell:active:not(.taken) {
-    transform: scale(0.97);
-  }
-
-  .cell.taken {
-    cursor: default;
-  }
-
+  .cell:hover:not(.taken) { background: var(--cell-hover); transform: scale(1.03); }
+  .cell:active:not(.taken) { transform: scale(0.97); }
+  .cell.taken { cursor: default; }
   .cell svg {
-    width: 52%;
-    height: 52%;
-    opacity: 0;
-    transform: scale(0.5);
+    width: 52%; height: 52%;
+    opacity: 0; transform: scale(0.5);
     animation: popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
   }
+  .cell.win-cell { animation: winPulse 0.8s ease-in-out infinite alternate; }
 
-  .cell.win-cell {
-    animation: winPulse 0.8s ease-in-out infinite alternate;
-  }
-
-  @keyframes popIn {
-    to { opacity: 1; transform: scale(1); }
-  }
-
+  @keyframes popIn { to { opacity: 1; transform: scale(1); } }
   @keyframes winPulse {
     0% { background: var(--surface); }
     100% { background: rgba(255, 215, 0, 0.08); }
   }
 
+  /* Controls */
   .controls {
-    margin-top: 28px;
+    margin-top: 24px;
     display: flex;
-    gap: 12px;
+    gap: 10px;
     flex-wrap: wrap;
     justify-content: center;
   }
-
   button.btn {
     background: var(--surface);
     color: var(--text);
     border: 1px solid var(--border);
     border-radius: 10px;
-    padding: 10px 20px;
-    font-size: 0.9rem;
+    padding: 10px 18px;
+    font-size: 0.85rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.15s;
     font-family: inherit;
   }
-
-  button.btn:hover {
-    background: var(--cell-hover);
-    border-color: var(--x-color);
-  }
-
-  button.btn.primary {
-    background: var(--x-color);
-    color: var(--bg);
-    border-color: var(--x-color);
-  }
-
-  button.btn.primary:hover {
-    background: #00bce6;
-    border-color: #00bce6;
-  }
+  button.btn:hover { background: var(--cell-hover); border-color: var(--x-color); }
+  button.btn.primary { background: var(--x-color); color: var(--bg); border-color: var(--x-color); }
+  button.btn.primary:hover { background: #00bce6; border-color: #00bce6; }
 
   .difficulty {
     display: flex;
     gap: 8px;
-    margin-top: 16px;
+    margin-top: 14px;
     flex-wrap: wrap;
     justify-content: center;
   }
-
   .diff-btn {
     background: transparent;
     color: var(--text-dim);
     border: 1px solid var(--border);
     border-radius: 8px;
-    padding: 6px 14px;
-    font-size: 0.8rem;
+    padding: 5px 12px;
+    font-size: 0.78rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.15s;
     font-family: inherit;
   }
-
-  .diff-btn.active {
-    color: var(--text);
-    border-color: var(--x-color);
-    background: rgba(0, 212, 255, 0.1);
-  }
-
-  .diff-btn:hover {
-    border-color: var(--x-color);
-  }
-
-  .side-picker {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 24px;
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-
-  .side-btn {
-    background: transparent;
-    color: var(--text-dim);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 6px 14px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.15s;
-    font-family: inherit;
-  }
-
-  .side-btn.active.x-side {
-    color: var(--x-color);
-    border-color: var(--x-color);
-    background: rgba(0, 212, 255, 0.1);
-  }
-
-  .side-btn.active.o-side {
-    color: var(--o-color);
-    border-color: var(--o-color);
-    background: rgba(255, 61, 127, 0.1);
-  }
-
-  .side-btn:hover {
-    border-color: var(--text-dim);
-  }
+  .diff-btn.active { color: var(--text); border-color: var(--x-color); background: rgba(0, 212, 255, 0.1); }
+  .diff-btn:hover { border-color: var(--x-color); }
 
   @media (max-width: 400px) {
-    h1 { font-size: 1.8rem; }
+    .start-logo { font-size: 3rem; }
+    .side-card { width: 110px; padding: 12px 8px; }
+    .side-card .mark-icon { font-size: 2rem; }
     .scoreboard { gap: 20px; }
-    .score-card .value { font-size: 1.6rem; }
-    .controls { flex-direction: column; align-items: center; }
+    .score-card .value { font-size: 1.5rem; }
   }
 
   @media (prefers-reduced-motion: reduce) {
+    .screen { animation: none; }
+    .start-grid .sg-cell { animation: none; opacity: 1; }
     .cell svg { animation: none; opacity: 1; transform: scale(1); }
     .cell.win-cell { animation: none; }
     .cell { transition: none; }
@@ -273,42 +365,73 @@
 </head>
 <body>
 
-<h1><span class="x">Крестики</span> · <span class="o">Нолики</span></h1>
-<p class="subtitle" id="subtitle">Вы играете за крестики. Бот — за нолики.</p>
+<!-- ═══════ START SCREEN ═══════ -->
+<div class="screen active" id="screen-start">
+  <div class="start-logo"><span class="x">✕</span>&nbsp;:&nbsp;<span class="o">○</span></div>
+  <div class="start-tagline">Крестики-Нолики с ботом</div>
 
-<div class="side-picker">
-  <button class="side-btn x-side active" data-side="X" onclick="setSide('X')">Играть за ✕</button>
-  <button class="side-btn o-side" data-side="O" onclick="setSide('O')">Играть за ○</button>
+  <div class="start-grid">
+    <div class="sg-cell"><svg viewBox="0 0 100 100"><line x1="20" y1="20" x2="80" y2="80" stroke="var(--x-color)" stroke-width="10" stroke-linecap="round"/><line x1="80" y1="20" x2="20" y2="80" stroke="var(--x-color)" stroke-width="10" stroke-linecap="round"/></svg></div>
+    <div class="sg-cell"></div>
+    <div class="sg-cell"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="30" fill="none" stroke="var(--o-color)" stroke-width="10"/></svg></div>
+    <div class="sg-cell"></div>
+    <div class="sg-cell"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="30" fill="none" stroke="var(--o-color)" stroke-width="10"/></svg></div>
+    <div class="sg-cell"><svg viewBox="0 0 100 100"><line x1="20" y1="20" x2="80" y2="80" stroke="var(--x-color)" stroke-width="10" stroke-linecap="round"/><line x1="80" y1="20" x2="20" y2="80" stroke="var(--x-color)" stroke-width="10" stroke-linecap="round"/></svg></div>
+    <div class="sg-cell"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="30" fill="none" stroke="var(--o-color)" stroke-width="10"/></svg></div>
+    <div class="sg-cell"><svg viewBox="0 0 100 100"><line x1="20" y1="20" x2="80" y2="80" stroke="var(--x-color)" stroke-width="10" stroke-linecap="round"/><line x1="80" y1="20" x2="20" y2="80" stroke="var(--x-color)" stroke-width="10" stroke-linecap="round"/></svg></div>
+    <div class="sg-cell"></div>
+  </div>
+
+  <button class="btn-start" onclick="startGame()">Начать игру</button>
 </div>
 
-<div class="scoreboard">
-  <div class="score-card player">
-    <div class="label">Вы</div>
-    <div class="value" id="score-player">0</div>
+<!-- ═══════ GAME SCREEN ═══════ -->
+<div class="screen" id="screen-game">
+  <h1><span class="x">Крестики</span> · <span class="o">Нолики</span></h1>
+  <p class="subtitle" id="subtitle">Выберите сторону</p>
+
+  <div class="side-picker">
+    <div class="side-card x-card active" data-side="X" onclick="setSide('X')">
+      <span class="vs-badge">ваш ход 1-м</span>
+      <div class="mark-icon">✕</div>
+      <div class="mark-label">Крестики</div>
+    </div>
+    <div class="side-card o-card" data-side="O" onclick="setSide('O')">
+      <span class="vs-badge">бот ходит 1-м</span>
+      <div class="mark-icon">○</div>
+      <div class="mark-label">Нолики</div>
+    </div>
   </div>
-  <div class="score-card draw">
-    <div class="label">Ничья</div>
-    <div class="value" id="score-draw">0</div>
+
+  <div class="scoreboard">
+    <div class="score-card player">
+      <div class="label">Вы</div>
+      <div class="value" id="score-player">0</div>
+    </div>
+    <div class="score-card draw">
+      <div class="label">Ничья</div>
+      <div class="value" id="score-draw">0</div>
+    </div>
+    <div class="score-card bot">
+      <div class="label">Бот</div>
+      <div class="value" id="score-bot">0</div>
+    </div>
   </div>
-  <div class="score-card bot">
-    <div class="label">Бот</div>
-    <div class="value" id="score-bot">0</div>
+
+  <div class="status" id="status">Ваш ход</div>
+
+  <div class="board" id="board"></div>
+
+  <div class="controls">
+    <button class="btn primary" onclick="resetGame()">Новая игра</button>
+    <button class="btn" onclick="backToStart()">Меню</button>
   </div>
-</div>
 
-<div class="status" id="status">Ваш ход</div>
-
-<div class="board" id="board"></div>
-
-<div class="controls">
-  <button class="btn primary" onclick="resetGame()">Новая игра</button>
-  <button class="btn" onclick="resetScores()">Сбросить счёт</button>
-</div>
-
-<div class="difficulty">
-  <button class="diff-btn active" data-diff="easy" onclick="setDifficulty('easy')">Лёгкий</button>
-  <button class="diff-btn" data-diff="medium" onclick="setDifficulty('medium')">Средний</button>
-  <button class="diff-btn" data-diff="hard" onclick="setDifficulty('hard')">Невозможный</button>
+  <div class="difficulty">
+    <button class="diff-btn active" data-diff="easy" onclick="setDifficulty('easy')">Лёгкий</button>
+    <button class="diff-btn" data-diff="medium" onclick="setDifficulty('medium')">Средний</button>
+    <button class="diff-btn" data-diff="hard" onclick="setDifficulty('hard')">Невозможный</button>
+  </div>
 </div>
 
 <script>
@@ -328,7 +451,20 @@ let botMark = 'O';
 
 const boardEl = document.getElementById('board');
 const statusEl = document.getElementById('status');
-const subtitleEl = document.getElementById('subtitle');
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function startGame() {
+  showScreen('screen-game');
+  resetGame();
+}
+
+function backToStart() {
+  showScreen('screen-start');
+}
 
 function createBoard() {
   boardEl.innerHTML = '';
@@ -356,9 +492,7 @@ function checkWin(b, mark) {
   return null;
 }
 
-function isFull(b) {
-  return b.every(c => c !== '');
-}
+function isFull(b) { return b.every(c => c !== ''); }
 
 function setStatus(text, cls) {
   statusEl.textContent = text;
@@ -394,7 +528,6 @@ function endGame(result) {
 function playerMove(index) {
   if (gameOver || locked || board[index]) return;
   locked = true;
-
   board[index] = playerMark;
   renderMark(index, playerMark);
 
@@ -408,7 +541,6 @@ function playerMove(index) {
 
 function botMove() {
   if (gameOver) return;
-
   let move;
   if (difficulty === 'hard') {
     move = bestMove(board, botMark);
@@ -434,7 +566,6 @@ function randomMove(b) {
   return empty[Math.floor(Math.random() * empty.length)];
 }
 
-// Minimax
 function bestMove(b, mark) {
   let bestScore = -Infinity;
   let move = -1;
@@ -494,19 +625,9 @@ function resetGame() {
 function setSide(side) {
   playerMark = side;
   botMark = side === 'X' ? 'O' : 'X';
-  document.querySelectorAll('.side-btn').forEach(btn => {
-    const isActive = btn.dataset.side === side;
-    btn.classList.toggle('active', isActive);
+  document.querySelectorAll('.side-card').forEach(card => {
+    card.classList.toggle('active', card.dataset.side === side);
   });
-  subtitleEl.textContent = side === 'X'
-    ? 'Вы играете за крестики. Бот — за нолики.'
-    : 'Вы играете за нолики. Бот — за крестики.';
-  resetGame();
-}
-
-function resetScores() {
-  scores = { player: 0, draw: 0, bot: 0 };
-  updateScore();
   resetGame();
 }
 
@@ -517,8 +638,6 @@ function setDifficulty(d) {
   });
   resetGame();
 }
-
-createBoard();
 </script>
 </body>
 </html>

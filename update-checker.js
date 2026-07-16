@@ -142,6 +142,9 @@
   }
 
   checkForUpdate().then(update => {
-    if (update) showBanner(update);
+    if (update) {
+      showBanner(update);
+      setTimeout(() => showModal(update), 1500);
+    }
   });
 })();

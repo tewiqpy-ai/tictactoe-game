@@ -43,6 +43,18 @@ jobs:
           chmod +x gradlew
           ./gradlew assembleRelease
 
+      - name: Find APK file
+        id: apk
+        run: |
+          APK=$(find android/app/build/outputs/apk -name "*.apk" | head -1)
+          if [ -z "$APK" ]; then
+            echo "No APK found!"
+            find android/app/build/outputs -type f -name "*.apk" || true
+            exit 1
+          fi
+          echo "path=$APK" >> "$GITHUB_OUTPUT"
+          echo "Found APK: $APK"
+
       - name: Get version from tag
         id: version
         run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> "$GITHUB_OUTPUT"
@@ -52,6 +64,6 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh release create "${{ github.ref_name }}" \
-            android/app/build/outputs/apk/release/app-release.apk \
+            "${{ steps.apk.outputs.path }}" \
             --title "v${{ steps.version.outputs.VERSION }}" \
             --generate-notes

@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Игры для тиктокерских</string>
+    <string name="title_activity_main">Игры для тиктокерских</string>
+    <string name="package_name">com.tictactoe.tiktoker</string>
+    <string name="custom_url_scheme">com.tictactoe.tiktoker</string>
+</resources>

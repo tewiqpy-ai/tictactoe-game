@@ -1,0 +1,26 @@
+{
+  "dependencies": {
+    "@capacitor/android": "^8.4.2",
+    "@capacitor/cli": "^8.4.2",
+    "@capacitor/core": "^8.4.2",
+    "playwright": "^1.61.1"
+  },
+  "name": "project",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "sync": "npx cap sync android",
+    "build:apk": "cd android && ./gradlew assembleRelease"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tewiqpy-ai/tictactoe-game.git"
+  },
+  "keywords": [],
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/tewiqpy-ai/tictactoe-game/issues"
+  },
+  "homepage": "https://github.com/tewiqpy-ai/tictactoe-game#readme"
+}

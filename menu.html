@@ -184,6 +184,35 @@
     .menu-title { animation: none; }
     .game-card { animation: none; opacity: 1; }
   }
+
+  .update-banner {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    max-width: 600px;
+    margin-top: 28px;
+    padding: 14px 18px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    text-decoration: none;
+    color: var(--text);
+    font-size: 0.88rem;
+    font-weight: 600;
+    transition: all 0.2s;
+    animation: fadeIn 0.4s ease 0.4s backwards;
+    cursor: pointer;
+  }
+
+  .update-banner:hover {
+    border-color: var(--x-color);
+    background: rgba(0, 212, 255, 0.05);
+  }
+
+  .update-banner:active {
+    transform: scale(0.98);
+  }
 </style>
 </head>
 <body>
@@ -226,6 +255,20 @@
     <div class="game-badge">Скоро</div>
   </div>
 </div>
+
+<div class="update-banner" id="update-banner" style="display:none">
+  <svg viewBox="0 0 100 100" fill="none" width="20" height="20">
+    <path d="M50 15 L50 60" stroke="var(--x-color)" stroke-width="10" stroke-linecap="round"/>
+    <path d="M30 45 L50 65 L70 45" stroke="var(--x-color)" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M20 80 L80 80" stroke="var(--text-dim)" stroke-width="8" stroke-linecap="round"/>
+  </svg>
+  <span id="update-banner-text">Доступно обновление</span>
+  <svg viewBox="0 0 24 24" fill="none" width="16" height="16" style="margin-left:auto">
+    <path d="M9 6l6 6-6 6" stroke="var(--text-dim)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+</div>
+
+<script src="update-checker.js"></script>
 
 </body>
 </html>

@@ -220,6 +220,43 @@
     border-color: var(--x-color);
   }
 
+  .side-picker {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .side-btn {
+    background: transparent;
+    color: var(--text-dim);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 6px 14px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: inherit;
+  }
+
+  .side-btn.active.x-side {
+    color: var(--x-color);
+    border-color: var(--x-color);
+    background: rgba(0, 212, 255, 0.1);
+  }
+
+  .side-btn.active.o-side {
+    color: var(--o-color);
+    border-color: var(--o-color);
+    background: rgba(255, 61, 127, 0.1);
+  }
+
+  .side-btn:hover {
+    border-color: var(--text-dim);
+  }
+
   @media (max-width: 400px) {
     h1 { font-size: 1.8rem; }
     .scoreboard { gap: 20px; }
@@ -237,7 +274,12 @@
 <body>
 
 <h1><span class="x">Крестики</span> · <span class="o">Нолики</span></h1>
-<p class="subtitle">Вы играете за крестики. Бот — за нолики.</p>
+<p class="subtitle" id="subtitle">Вы играете за крестики. Бот — за нолики.</p>
+
+<div class="side-picker">
+  <button class="side-btn x-side active" data-side="X" onclick="setSide('X')">Играть за ✕</button>
+  <button class="side-btn o-side" data-side="O" onclick="setSide('O')">Играть за ○</button>
+</div>
 
 <div class="scoreboard">
   <div class="score-card player">
@@ -278,11 +320,15 @@ const WINNING_LINES = [
 
 let board = Array(9).fill('');
 let gameOver = false;
+let locked = false;
 let scores = { player: 0, draw: 0, bot: 0 };
 let difficulty = 'easy';
+let playerMark = 'X';
+let botMark = 'O';
 
 const boardEl = document.getElementById('board');
 const statusEl = document.getElementById('status');
+const subtitleEl = document.getElementById('subtitle');
 
 function createBoard() {
   boardEl.innerHTML = '';
@@ -331,10 +377,11 @@ function highlightWin(line) {
 
 function endGame(result) {
   gameOver = true;
-  if (result === 'X') {
+  locked = true;
+  if (result === 'player') {
     setStatus('Вы выиграли!', 'win');
     scores.player++;
-  } else if (result === 'O') {
+  } else if (result === 'bot') {
     setStatus('Бот победил!', 'lose');
     scores.bot++;
   } else {
@@ -345,13 +392,14 @@ function endGame(result) {
 }
 
 function playerMove(index) {
-  if (gameOver || board[index]) return;
+  if (gameOver || locked || board[index]) return;
+  locked = true;
 
-  board[index] = 'X';
-  renderMark(index, 'X');
+  board[index] = playerMark;
+  renderMark(index, playerMark);
 
-  const winLine = checkWin(board, 'X');
-  if (winLine) { highlightWin(winLine); endGame('X'); return; }
+  const winLine = checkWin(board, playerMark);
+  if (winLine) { highlightWin(winLine); endGame('player'); return; }
   if (isFull(board)) { endGame('draw'); return; }
 
   setStatus('Бот думает…');
@@ -363,20 +411,21 @@ function botMove() {
 
   let move;
   if (difficulty === 'hard') {
-    move = bestMove(board, 'O');
+    move = bestMove(board, botMark);
   } else if (difficulty === 'medium') {
-    move = Math.random() < 0.7 ? bestMove(board, 'O') : randomMove(board);
+    move = Math.random() < 0.7 ? bestMove(board, botMark) : randomMove(board);
   } else {
-    move = Math.random() < 0.3 ? bestMove(board, 'O') : randomMove(board);
+    move = Math.random() < 0.3 ? bestMove(board, botMark) : randomMove(board);
   }
 
-  board[move] = 'O';
-  renderMark(move, 'O');
+  board[move] = botMark;
+  renderMark(move, botMark);
 
-  const winLine = checkWin(board, 'O');
-  if (winLine) { highlightWin(winLine); endGame('O'); return; }
+  const winLine = checkWin(board, botMark);
+  if (winLine) { highlightWin(winLine); endGame('bot'); return; }
   if (isFull(board)) { endGame('draw'); return; }
 
+  locked = false;
   setStatus('Ваш ход');
 }
 
@@ -431,8 +480,28 @@ function minimax(b, depth, isMax, botMark) {
 function resetGame() {
   board = Array(9).fill('');
   gameOver = false;
+  locked = false;
   createBoard();
-  setStatus('Ваш ход');
+  if (playerMark === 'O') {
+    locked = true;
+    setStatus('Бот думает…');
+    setTimeout(botMove, 500);
+  } else {
+    setStatus('Ваш ход');
+  }
+}
+
+function setSide(side) {
+  playerMark = side;
+  botMark = side === 'X' ? 'O' : 'X';
+  document.querySelectorAll('.side-btn').forEach(btn => {
+    const isActive = btn.dataset.side === side;
+    btn.classList.toggle('active', isActive);
+  });
+  subtitleEl.textContent = side === 'X'
+    ? 'Вы играете за крестики. Бот — за нолики.'
+    : 'Вы играете за нолики. Бот — за крестики.';
+  resetGame();
 }
 
 function resetScores() {

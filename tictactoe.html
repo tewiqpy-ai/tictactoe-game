@@ -464,7 +464,6 @@
 
   <div class="controls">
     <button class="btn primary" onclick="resetGame()">Новая игра</button>
-    <button class="btn" onclick="showScreen('screen-start')">Назад к выбору</button>
   </div>
 </div>
 
@@ -558,6 +557,7 @@ function endGame(result) {
     scores.draw++;
   }
   updateScore();
+  setTimeout(resetGame, 1500);
 }
 
 function playerMove(index) {

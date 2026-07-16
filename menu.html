@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Игры для тиктокерских</title>
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --surface: #141929;
+    --border: #1e2540;
+    --x-color: #00d4ff;
+    --o-color: #ff3d7f;
+    --text: #e0e6f0;
+    --text-dim: #5a6480;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 24px;
+    overflow-x: hidden;
+  }
+
+  .menu-title {
+    font-size: 2rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    margin-bottom: 48px;
+    text-align: center;
+    background: linear-gradient(90deg, #4a5580, #e0e6f0, #ffffff, #e0e6f0, #4a5580);
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: shimmer 3s ease-in-out infinite;
+  }
+
+  @keyframes shimmer {
+    0%, 100% { background-position: 200% center; }
+    50% { background-position: 0% center; }
+  }
+
+  .games-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 20px;
+    width: 100%;
+    max-width: 600px;
+  }
+
+  .game-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    position: relative;
+    overflow: hidden;
+    animation: fadeIn 0.4s ease backwards;
+  }
+
+  .game-card:nth-child(1) { animation-delay: 0.1s; }
+  .game-card:nth-child(2) { animation-delay: 0.2s; }
+  .game-card:nth-child(3) { animation-delay: 0.3s; }
+
+  .game-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 14px;
+    opacity: 0;
+    transition: opacity 0.25s;
+  }
+
+  .game-card:hover {
+    transform: translateY(-6px);
+    border-color: var(--x-color);
+    box-shadow: 0 8px 32px rgba(0, 212, 255, 0.15);
+  }
+  .game-card:hover::before { opacity: 1; }
+
+  .game-card:active {
+    transform: translateY(-2px);
+  }
+
+  .game-icon {
+    width: 56px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 14px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .game-icon svg {
+    width: 40px;
+    height: 40px;
+  }
+
+  .game-card.tictactoe .game-icon {
+    background: rgba(0, 212, 255, 0.1);
+  }
+  .game-card.tictactoe::before {
+    background: radial-gradient(circle at 50% 30%, rgba(0, 212, 255, 0.12), transparent 70%);
+  }
+  .game-card.tictactoe:hover {
+    border-color: var(--x-color);
+  }
+
+  .game-card.coming-soon .game-icon {
+    background: rgba(90, 100, 128, 0.15);
+    opacity: 0.5;
+  }
+  .game-card.coming-soon::before {
+    background: radial-gradient(circle at 50% 30%, rgba(90, 100, 128, 0.1), transparent 70%);
+  }
+  .game-card.coming-soon {
+    cursor: default;
+    opacity: 0.5;
+  }
+  .game-card.coming-soon:hover {
+    transform: none;
+    border-color: var(--border);
+    box-shadow: none;
+  }
+
+  .game-name {
+    font-size: 1rem;
+    font-weight: 700;
+    position: relative;
+    z-index: 1;
+  }
+
+  .game-badge {
+    font-size: 0.65rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 4px 10px;
+    border-radius: 6px;
+    background: var(--border);
+    color: var(--text-dim);
+    position: relative;
+    z-index: 1;
+  }
+
+  .game-card.tictactoe .game-badge {
+    background: rgba(0, 212, 255, 0.15);
+    color: var(--x-color);
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 400px) {
+    .menu-title { font-size: 1.5rem; }
+    .games-grid { grid-template-columns: 1fr 1fr; gap: 14px; }
+    .game-card { padding: 20px 14px; }
+    .game-icon { width: 44px; height: 44px; }
+    .game-icon svg { width: 32px; height: 32px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .menu-title { animation: none; }
+    .game-card { animation: none; opacity: 1; }
+  }
+</style>
+</head>
+<body>
+
+<div class="menu-title">Игры для тиктокерских</div>
+
+<div class="games-grid">
+  <a href="tictactoe.html" class="game-card tictactoe">
+    <div class="game-icon">
+      <svg viewBox="0 0 100 100">
+        <line x1="10" y1="10" x2="90" y2="90" stroke="var(--x-color)" stroke-width="10" stroke-linecap="round"/>
+        <line x1="90" y1="10" x2="10" y2="90" stroke="var(--x-color)" stroke-width="10" stroke-linecap="round"/>
+        <circle cx="50" cy="50" r="28" fill="none" stroke="var(--o-color)" stroke-width="10" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div class="game-name">Крестики-Нолики</div>
+    <div class="game-badge">Играть</div>
+  </a>
+
+  <div class="game-card coming-soon">
+    <div class="game-icon">
+      <svg viewBox="0 0 100 100">
+        <rect x="10" y="10" width="35" height="35" rx="6" fill="none" stroke="var(--text-dim)" stroke-width="6"/>
+        <rect x="55" y="10" width="35" height="35" rx="6" fill="none" stroke="var(--text-dim)" stroke-width="6"/>
+        <rect x="10" y="55" width="35" height="35" rx="6" fill="none" stroke="var(--text-dim)" stroke-width="6"/>
+        <rect x="55" y="55" width="35" height="35" rx="6" fill="none" stroke="var(--text-dim)" stroke-width="6"/>
+      </svg>
+    </div>
+    <div class="game-name">Скоро</div>
+    <div class="game-badge">Скоро</div>
+  </div>
+
+  <div class="game-card coming-soon">
+    <div class="game-icon">
+      <svg viewBox="0 0 100 100">
+        <polygon points="50,10 90,90 10,90" fill="none" stroke="var(--text-dim)" stroke-width="6" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <div class="game-name">Скоро</div>
+    <div class="game-badge">Скоро</div>
+  </div>
+</div>
+
+</body>
+</html>

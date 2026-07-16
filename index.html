@@ -102,6 +102,82 @@
     width: 32px; height: 32px;
   }
 
+  /* Start Difficulty Picker */
+  .start-section-label {
+    color: var(--text-dim);
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    margin-bottom: 10px;
+  }
+
+  .start-diff-picker {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 32px;
+    justify-content: center;
+  }
+
+  .start-diff-card {
+    padding: 12px 16px;
+    border-radius: 12px;
+    border: 2px solid var(--border);
+    background: var(--surface);
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s;
+    min-width: 90px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .start-diff-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 10px;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .start-diff-card:hover { transform: translateY(-2px); }
+  .start-diff-card:hover::before { opacity: 1; }
+
+  .start-diff-card.active {
+    border-color: var(--x-color);
+    box-shadow: 0 0 16px rgba(0, 212, 255, 0.15);
+  }
+  .start-diff-card.active::before { opacity: 1; }
+
+  .start-diff-card .diff-icon {
+    font-size: 1.5rem;
+    margin-bottom: 4px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .start-diff-card .diff-name {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text-dim);
+    position: relative;
+    z-index: 1;
+  }
+  .start-diff-card.active .diff-name { color: var(--text); }
+
+  .start-diff-card.easy::before { background: radial-gradient(circle at 50% 30%, rgba(76,175,80,0.15), transparent 70%); }
+  .start-diff-card.easy.active { border-color: #4caf50; box-shadow: 0 0 16px rgba(76,175,80,0.2); }
+  .start-diff-card.easy .diff-icon { color: #4caf50; }
+
+  .start-diff-card.medium::before { background: radial-gradient(circle at 50% 30%, rgba(255,193,7,0.15), transparent 70%); }
+  .start-diff-card.medium.active { border-color: #ffc107; box-shadow: 0 0 16px rgba(255,193,7,0.2); }
+  .start-diff-card.medium .diff-icon { color: #ffc107; }
+
+  .start-diff-card.hard::before { background: radial-gradient(circle at 50% 30%, rgba(255,61,127,0.15), transparent 70%); }
+  .start-diff-card.hard.active { border-color: var(--o-color); box-shadow: 0 0 16px rgba(255,61,127,0.2); }
+  .start-diff-card.hard .diff-icon { color: var(--o-color); }
+
   .btn-start {
     background: linear-gradient(135deg, var(--x-color), #0090cc);
     color: var(--bg);
@@ -348,6 +424,7 @@
 
   @media (max-width: 400px) {
     .start-logo { font-size: 3rem; }
+    .start-diff-card { min-width: 78px; padding: 10px 10px; }
     .side-card { width: 110px; padding: 12px 8px; }
     .side-card .mark-icon { font-size: 2rem; }
     .scoreboard { gap: 20px; }
@@ -380,6 +457,22 @@
     <div class="sg-cell"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="30" fill="none" stroke="var(--o-color)" stroke-width="10"/></svg></div>
     <div class="sg-cell"><svg viewBox="0 0 100 100"><line x1="20" y1="20" x2="80" y2="80" stroke="var(--x-color)" stroke-width="10" stroke-linecap="round"/><line x1="80" y1="20" x2="20" y2="80" stroke="var(--x-color)" stroke-width="10" stroke-linecap="round"/></svg></div>
     <div class="sg-cell"></div>
+  </div>
+
+  <div class="start-section-label">Сложность</div>
+  <div class="start-diff-picker">
+    <div class="start-diff-card easy active" data-diff="easy" onclick="setDifficulty('easy')">
+      <div class="diff-icon">&#9786;</div>
+      <div class="diff-name">Лёгкий</div>
+    </div>
+    <div class="start-diff-card medium" data-diff="medium" onclick="setDifficulty('medium')">
+      <div class="diff-icon">&#9783;</div>
+      <div class="diff-name">Средний</div>
+    </div>
+    <div class="start-diff-card hard" data-diff="hard" onclick="setDifficulty('hard')">
+      <div class="diff-icon">&#9760;</div>
+      <div class="diff-name">Невозможный</div>
+    </div>
   </div>
 
   <button class="btn-start" onclick="startGame()">Начать игру</button>
@@ -635,6 +728,9 @@ function setDifficulty(d) {
   difficulty = d;
   document.querySelectorAll('.diff-btn').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.diff === d);
+  });
+  document.querySelectorAll('.start-diff-card').forEach(card => {
+    card.classList.toggle('active', card.dataset.diff === d);
   });
   resetGame();
 }

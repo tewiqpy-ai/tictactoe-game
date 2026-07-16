@@ -370,6 +370,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    aspect-ratio: 1;
     transition: background 0.15s, transform 0.1s;
   }
   .cell:hover:not(.taken) { background: var(--cell-hover); transform: scale(1.03); }
@@ -746,7 +747,7 @@ function setDifficulty(d) {
   document.querySelectorAll('.diff-btn').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.diff === d);
   });
-  document.querySelectorAll('.start-diff-card').forEach(card => {
+  document.querySelectorAll('.start-diff-card[data-diff]').forEach(card => {
     card.classList.toggle('active', card.dataset.diff === d);
   });
   resetGame();

@@ -463,7 +463,7 @@
   <div class="board" id="board"></div>
 
   <div class="controls">
-    <button class="btn primary" onclick="showScreen('screen-start')">Новая игра</button>
+    <button class="btn" onclick="showScreen('screen-start')" style="font-size: 0.85rem; padding: 10px 24px;">Новая игра</button>
   </div>
 </div>
 
@@ -557,6 +557,7 @@ function endGame(result) {
     scores.draw++;
   }
   updateScore();
+  setTimeout(resetGame, 2000);
 }
 
 function playerMove(index) {

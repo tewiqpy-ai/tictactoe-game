@@ -1,5 +1,5 @@
 (() => {
-  const CURRENT_VERSION = '1.2.1';
+  const CURRENT_VERSION = '1.2.2';
   const REPO = 'tewiqpy-ai/tictactoe-game';
 
   async function checkForUpdate() {

@@ -1,5 +1,5 @@
 (() => {
-  const CURRENT_VERSION = '1.0.0';
+  const CURRENT_VERSION = '1.2.1';
   const REPO = 'tewiqpy-ai/tictactoe-game';
 
   async function checkForUpdate() {
@@ -41,6 +41,13 @@
           display: flex; align-items: center; justify-content: center;
           padding: 24px;
           animation: fadeIn 0.3s ease;
+          -webkit-tap-highlight-color: transparent;
+        }
+        #update-overlay * {
+          -webkit-tap-highlight-color: transparent;
+          -webkit-touch-callout: none;
+          -webkit-user-select: none;
+          user-select: none;
         }
         #update-modal {
           background: var(--surface, #141929);

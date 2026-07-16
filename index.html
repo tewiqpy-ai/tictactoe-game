@@ -167,6 +167,14 @@
     margin-bottom: 4px;
     position: relative;
     z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .start-diff-card .diff-icon svg {
+    width: 28px;
+    height: 28px;
   }
 
   .start-diff-card .diff-name {
@@ -450,6 +458,7 @@
   @media (max-width: 400px) {
     .start-logo { font-size: 3rem; }
     .start-diff-card { min-width: 78px; padding: 10px 10px; }
+    .start-diff-card .diff-icon svg { width: 24px; height: 24px; }
     .side-card { width: 110px; padding: 12px 8px; }
     .side-card .mark-icon { font-size: 2rem; }
     .scoreboard { gap: 20px; }

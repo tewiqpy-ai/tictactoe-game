@@ -6,3 +6,4 @@ android/app/build/
 android/capacitor-*
 local.properties
 *.apk
+*.keystore

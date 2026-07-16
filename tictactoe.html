@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Крестики-Нолики</title>
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --surface: #141929;
+    --border: #1e2540;
+    --x-color: #00d4ff;
+    --o-color: #ff3d7f;
+    --win-glow: #ffd700;
+    --text: #e0e6f0;
+    --text-dim: #5a6480;
+    --cell-hover: #1a2035;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    overflow-x: hidden;
+  }
+
+  h1 {
+    font-size: 2.4rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    margin-bottom: 8px;
+    text-align: center;
+  }
+
+  h1 .x { color: var(--x-color); }
+  h1 .o { color: var(--o-color); }
+
+  .subtitle {
+    color: var(--text-dim);
+    font-size: 0.95rem;
+    margin-bottom: 32px;
+    text-align: center;
+  }
+
+  .scoreboard {
+    display: flex;
+    gap: 32px;
+    margin-bottom: 28px;
+  }
+
+  .score-card {
+    text-align: center;
+    min-width: 80px;
+  }
+
+  .score-card .label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--text-dim);
+    margin-bottom: 4px;
+  }
+
+  .score-card .value {
+    font-size: 2rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .score-card.player .value { color: var(--x-color); }
+  .score-card.draw .value { color: var(--text-dim); }
+  .score-card.bot .value { color: var(--o-color); }
+
+  .status {
+    font-size: 1.15rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+    min-height: 32px;
+    text-align: center;
+    transition: color 0.3s;
+  }
+
+  .status.win { color: var(--win-glow); }
+  .status.lose { color: var(--o-color); }
+  .status.draw { color: var(--text-dim); }
+
+  .board {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+    background: var(--border);
+    border-radius: 16px;
+    padding: 6px;
+    width: min(360px, calc(100vw - 48px));
+    aspect-ratio: 1;
+    box-shadow: 0 0 60px rgba(0, 212, 255, 0.05), 0 0 60px rgba(255, 61, 127, 0.05);
+  }
+
+  .cell {
+    background: var(--surface);
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s, transform 0.1s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cell:hover:not(.taken) {
+    background: var(--cell-hover);
+    transform: scale(1.03);
+  }
+
+  .cell:active:not(.taken) {
+    transform: scale(0.97);
+  }
+
+  .cell.taken {
+    cursor: default;
+  }
+
+  .cell svg {
+    width: 52%;
+    height: 52%;
+    opacity: 0;
+    transform: scale(0.5);
+    animation: popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+
+  .cell.win-cell {
+    animation: winPulse 0.8s ease-in-out infinite alternate;
+  }
+
+  @keyframes popIn {
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  @keyframes winPulse {
+    0% { background: var(--surface); }
+    100% { background: rgba(255, 215, 0, 0.08); }
+  }
+
+  .controls {
+    margin-top: 28px;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  button.btn {
+    background: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: inherit;
+  }
+
+  button.btn:hover {
+    background: var(--cell-hover);
+    border-color: var(--x-color);
+  }
+
+  button.btn.primary {
+    background: var(--x-color);
+    color: var(--bg);
+    border-color: var(--x-color);
+  }
+
+  button.btn.primary:hover {
+    background: #00bce6;
+    border-color: #00bce6;
+  }
+
+  .difficulty {
+    display: flex;
+    gap: 8px;
+    margin-top: 16px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .diff-btn {
+    background: transparent;
+    color: var(--text-dim);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 6px 14px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: inherit;
+  }
+
+  .diff-btn.active {
+    color: var(--text);
+    border-color: var(--x-color);
+    background: rgba(0, 212, 255, 0.1);
+  }
+
+  .diff-btn:hover {
+    border-color: var(--x-color);
+  }
+
+  @media (max-width: 400px) {
+    h1 { font-size: 1.8rem; }
+    .scoreboard { gap: 20px; }
+    .score-card .value { font-size: 1.6rem; }
+    .controls { flex-direction: column; align-items: center; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cell svg { animation: none; opacity: 1; transform: scale(1); }
+    .cell.win-cell { animation: none; }
+    .cell { transition: none; }
+  }
+</style>
+</head>
+<body>
+
+<h1><span class="x">Крестики</span> · <span class="o">Нолики</span></h1>
+<p class="subtitle">Вы играете за крестики. Бот — за нолики.</p>
+
+<div class="scoreboard">
+  <div class="score-card player">
+    <div class="label">Вы</div>
+    <div class="value" id="score-player">0</div>
+  </div>
+  <div class="score-card draw">
+    <div class="label">Ничья</div>
+    <div class="value" id="score-draw">0</div>
+  </div>
+  <div class="score-card bot">
+    <div class="label">Бот</div>
+    <div class="value" id="score-bot">0</div>
+  </div>
+</div>
+
+<div class="status" id="status">Ваш ход</div>
+
+<div class="board" id="board"></div>
+
+<div class="controls">
+  <button class="btn primary" onclick="resetGame()">Новая игра</button>
+  <button class="btn" onclick="resetScores()">Сбросить счёт</button>
+</div>
+
+<div class="difficulty">
+  <button class="diff-btn active" data-diff="easy" onclick="setDifficulty('easy')">Лёгкий</button>
+  <button class="diff-btn" data-diff="medium" onclick="setDifficulty('medium')">Средний</button>
+  <button class="diff-btn" data-diff="hard" onclick="setDifficulty('hard')">Невозможный</button>
+</div>
+
+<script>
+const WINNING_LINES = [
+  [0,1,2],[3,4,5],[6,7,8],
+  [0,3,6],[1,4,7],[2,5,8],
+  [0,4,8],[2,4,6]
+];
+
+let board = Array(9).fill('');
+let gameOver = false;
+let scores = { player: 0, draw: 0, bot: 0 };
+let difficulty = 'easy';
+
+const boardEl = document.getElementById('board');
+const statusEl = document.getElementById('status');
+
+function createBoard() {
+  boardEl.innerHTML = '';
+  for (let i = 0; i < 9; i++) {
+    const cell = document.createElement('button');
+    cell.className = 'cell';
+    cell.setAttribute('aria-label', `Клетка ${i + 1}`);
+    cell.addEventListener('click', () => playerMove(i));
+    boardEl.appendChild(cell);
+  }
+}
+
+function renderMark(index, mark) {
+  const cell = boardEl.children[index];
+  cell.classList.add('taken');
+  cell.innerHTML = mark === 'X'
+    ? `<svg viewBox="0 0 100 100"><line x1="20" y1="20" x2="80" y2="80" stroke="var(--x-color)" stroke-width="10" stroke-linecap="round"/><line x1="80" y1="20" x2="20" y2="80" stroke="var(--x-color)" stroke-width="10" stroke-linecap="round"/></svg>`
+    : `<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="30" fill="none" stroke="var(--o-color)" stroke-width="10" stroke-linecap="round"/></svg>`;
+}
+
+function checkWin(b, mark) {
+  for (const line of WINNING_LINES) {
+    if (line.every(i => b[i] === mark)) return line;
+  }
+  return null;
+}
+
+function isFull(b) {
+  return b.every(c => c !== '');
+}
+
+function setStatus(text, cls) {
+  statusEl.textContent = text;
+  statusEl.className = 'status' + (cls ? ' ' + cls : '');
+}
+
+function updateScore() {
+  document.getElementById('score-player').textContent = scores.player;
+  document.getElementById('score-draw').textContent = scores.draw;
+  document.getElementById('score-bot').textContent = scores.bot;
+}
+
+function highlightWin(line) {
+  line.forEach(i => boardEl.children[i].classList.add('win-cell'));
+}
+
+function endGame(result) {
+  gameOver = true;
+  if (result === 'X') {
+    setStatus('Вы выиграли!', 'win');
+    scores.player++;
+  } else if (result === 'O') {
+    setStatus('Бот победил!', 'lose');
+    scores.bot++;
+  } else {
+    setStatus('Ничья', 'draw');
+    scores.draw++;
+  }
+  updateScore();
+}
+
+function playerMove(index) {
+  if (gameOver || board[index]) return;
+
+  board[index] = 'X';
+  renderMark(index, 'X');
+
+  const winLine = checkWin(board, 'X');
+  if (winLine) { highlightWin(winLine); endGame('X'); return; }
+  if (isFull(board)) { endGame('draw'); return; }
+
+  setStatus('Бот думает…');
+  setTimeout(botMove, 350 + Math.random() * 300);
+}
+
+function botMove() {
+  if (gameOver) return;
+
+  let move;
+  if (difficulty === 'hard') {
+    move = bestMove(board, 'O');
+  } else if (difficulty === 'medium') {
+    move = Math.random() < 0.7 ? bestMove(board, 'O') : randomMove(board);
+  } else {
+    move = Math.random() < 0.3 ? bestMove(board, 'O') : randomMove(board);
+  }
+
+  board[move] = 'O';
+  renderMark(move, 'O');
+
+  const winLine = checkWin(board, 'O');
+  if (winLine) { highlightWin(winLine); endGame('O'); return; }
+  if (isFull(board)) { endGame('draw'); return; }
+
+  setStatus('Ваш ход');
+}
+
+function randomMove(b) {
+  const empty = b.map((v, i) => v === '' ? i : -1).filter(i => i >= 0);
+  return empty[Math.floor(Math.random() * empty.length)];
+}
+
+// Minimax
+function bestMove(b, mark) {
+  let bestScore = -Infinity;
+  let move = -1;
+  for (let i = 0; i < 9; i++) {
+    if (b[i] !== '') continue;
+    b[i] = mark;
+    const score = minimax(b, 0, false, mark);
+    b[i] = '';
+    if (score > bestScore) { bestScore = score; move = i; }
+  }
+  return move;
+}
+
+function minimax(b, depth, isMax, botMark) {
+  const humanMark = botMark === 'X' ? 'O' : 'X';
+  const winBot = checkWin(b, botMark);
+  const winHuman = checkWin(b, humanMark);
+  if (winBot) return 10 - depth;
+  if (winHuman) return depth - 10;
+  if (isFull(b)) return 0;
+
+  if (isMax) {
+    let best = -Infinity;
+    for (let i = 0; i < 9; i++) {
+      if (b[i] !== '') continue;
+      b[i] = botMark;
+      best = Math.max(best, minimax(b, depth + 1, false, botMark));
+      b[i] = '';
+    }
+    return best;
+  } else {
+    let best = Infinity;
+    for (let i = 0; i < 9; i++) {
+      if (b[i] !== '') continue;
+      b[i] = humanMark;
+      best = Math.min(best, minimax(b, depth + 1, true, botMark));
+      b[i] = '';
+    }
+    return best;
+  }
+}
+
+function resetGame() {
+  board = Array(9).fill('');
+  gameOver = false;
+  createBoard();
+  setStatus('Ваш ход');
+}
+
+function resetScores() {
+  scores = { player: 0, draw: 0, bot: 0 };
+  updateScore();
+  resetGame();
+}
+
+function setDifficulty(d) {
+  difficulty = d;
+  document.querySelectorAll('.diff-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.diff === d);
+  });
+  resetGame();
+}
+
+createBoard();
+</script>
+</body>
+</html>

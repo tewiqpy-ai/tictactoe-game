@@ -459,6 +459,18 @@
     <div class="sg-cell"></div>
   </div>
 
+  <div class="start-section-label">Сторона</div>
+  <div class="start-diff-picker">
+    <div class="start-diff-card active" data-side="X" onclick="setSide('X')" style="min-width:100px">
+      <div class="diff-icon" style="color:var(--x-color);font-size:1.8rem">&#10005;</div>
+      <div class="diff-name">Крестики</div>
+    </div>
+    <div class="start-diff-card" data-side="O" onclick="setSide('O')" style="min-width:100px">
+      <div class="diff-icon" style="color:var(--o-color);font-size:1.8rem">&#9711;</div>
+      <div class="diff-name">Нолики</div>
+    </div>
+  </div>
+
   <div class="start-section-label">Сложность</div>
   <div class="start-diff-picker">
     <div class="start-diff-card easy active" data-diff="easy" onclick="setDifficulty('easy')">
@@ -481,20 +493,7 @@
 <!-- ═══════ GAME SCREEN ═══════ -->
 <div class="screen" id="screen-game">
   <h1><span class="x">Крестики</span> · <span class="o">Нолики</span></h1>
-  <p class="subtitle" id="subtitle">Выберите сторону</p>
-
-  <div class="side-picker">
-    <div class="side-card x-card active" data-side="X" onclick="setSide('X')">
-      <span class="vs-badge">ваш ход 1-м</span>
-      <div class="mark-icon">✕</div>
-      <div class="mark-label">Крестики</div>
-    </div>
-    <div class="side-card o-card" data-side="O" onclick="setSide('O')">
-      <span class="vs-badge">бот ходит 1-м</span>
-      <div class="mark-icon">○</div>
-      <div class="mark-label">Нолики</div>
-    </div>
-  </div>
+  <p class="subtitle" id="subtitle"></p>
 
   <div class="scoreboard">
     <div class="score-card player">
@@ -546,6 +545,9 @@ function showScreen(id) {
 
 function startGame() {
   showScreen('screen-game');
+  subtitleEl.textContent = playerMark === 'X'
+    ? 'Вы играете за крестики. Бот — за нолики.'
+    : 'Вы играете за нолики. Бот — за крестики.';
   resetGame();
 }
 
@@ -712,9 +714,12 @@ function resetGame() {
 function setSide(side) {
   playerMark = side;
   botMark = side === 'X' ? 'O' : 'X';
-  document.querySelectorAll('.side-card').forEach(card => {
-    card.classList.toggle('active', card.dataset.side === side);
+  document.querySelectorAll('[data-side]').forEach(el => {
+    el.classList.toggle('active', el.dataset.side === side);
   });
+  subtitleEl.textContent = side === 'X'
+    ? 'Вы играете за крестики. Бот — за нолики.'
+    : 'Вы играете за нолики. Бот — за крестики.';
   resetGame();
 }
 

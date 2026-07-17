@@ -209,10 +209,22 @@
 
 <a class="back-btn" href="menu.html">Назад</a>
 
-<script type="module">
-  import { auth, db } from './firebase-config.js';
-  import { collection, query, orderBy, limit, getDocs } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
-  import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script>
+  if (!firebase.apps.length) {
+    firebase.initializeApp({
+      apiKey: "AIzaSyDylaym85cTkafDl5OitpEZKrUuwwJHn_w",
+      authDomain: "tictactoe-5ba18.firebaseapp.com",
+      projectId: "tictactoe-5ba18",
+      storageBucket: "tictactoe-5ba18.firebasestorage.app",
+      messagingSenderId: "23885470883",
+      appId: "1:23885470883:web:3289b4378c236767a47316"
+    });
+  }
+  const auth = firebase.auth();
+  const db = firebase.firestore();
 
   const RESULT_LABELS = { win: 'Победа', lose: 'Поражение', draw: 'Ничья' };
   const DIFF_LABELS = { easy: 'Лёгкий', medium: 'Средний', hard: 'Невозможный' };
@@ -224,19 +236,15 @@
     return d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
   }
 
-  onAuthStateChanged(auth, async (user) => {
+  auth.onAuthStateChanged(async (user) => {
     if (!user) {
       document.getElementById('game-list').innerHTML = '<div class="empty-state">Войдите через Google, чтобы видеть историю игр</div>';
       return;
     }
 
     try {
-      const q = query(
-        collection(db, 'users', user.uid, 'games'),
-        orderBy('timestamp', 'desc'),
-        limit(50)
-      );
-      const snap = await getDocs(q);
+      const snap = await db.collection('users').doc(user.uid).collection('games')
+        .orderBy('timestamp', 'desc').limit(50).get();
 
       if (snap.empty) {
         document.getElementById('game-list').innerHTML = '<div class="empty-state">Пока нет игр. Сыграйте первую!</div>';

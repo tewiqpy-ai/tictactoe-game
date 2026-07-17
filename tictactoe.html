@@ -684,22 +684,33 @@ function setDifficulty(d) {
   resetGame();
 }
 </script>
-<script type="module">
-  import { auth, db } from './firebase-config.js';
-  import { addDoc, collection, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
-  import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
-
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script>
+  if (!firebase.apps.length) {
+    firebase.initializeApp({
+      apiKey: "AIzaSyDylaym85cTkafDl5OitpEZKrUuwwJHn_w",
+      authDomain: "tictactoe-5ba18.firebaseapp.com",
+      projectId: "tictactoe-5ba18",
+      storageBucket: "tictactoe-5ba18.firebasestorage.app",
+      messagingSenderId: "23885470883",
+      appId: "1:23885470883:web:3289b4378c236767a47316"
+    });
+  }
+  const auth = firebase.auth();
+  const db = firebase.firestore();
   let savedUser = null;
-  onAuthStateChanged(auth, (user) => { savedUser = user; });
+  auth.onAuthStateChanged((user) => { savedUser = user; });
 
   window.saveGameResult = function(result) {
     if (!savedUser) return;
     const gameResult = result === 'player' ? 'win' : result === 'bot' ? 'lose' : 'draw';
-    addDoc(collection(db, 'users', savedUser.uid, 'games'), {
+    db.collection('users').doc(savedUser.uid).collection('games').add({
       result: gameResult,
       difficulty,
       playerMark,
-      timestamp: serverTimestamp()
+      timestamp: firebase.firestore.FieldValue.serverTimestamp()
     }).catch(e => console.error('Save game error:', e));
   };
 </script>

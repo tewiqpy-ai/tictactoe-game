@@ -346,15 +346,58 @@
 </div>
 
 
-<script type="module">
-  import { initAuth } from './auth.js';
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyDylaym85cTkafDl5OitpEZKrUuwwJHn_w",
+    authDomain: "tictactoe-5ba18.firebaseapp.com",
+    projectId: "tictactoe-5ba18",
+    storageBucket: "tictactoe-5ba18.firebasestorage.app",
+    messagingSenderId: "23885470883",
+    appId: "1:23885470883:web:3289b4378c236767a47316"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.firestore();
+  const provider = new firebase.auth.GoogleAuthProvider();
 
-  initAuth();
-
-  window.addEventListener('authchange', (e) => {
+  function updateAuthUI(user) {
+    const container = document.getElementById('auth-container');
     const card = document.getElementById('history-card');
-    if (card) card.classList.toggle('hidden', !e.detail.user);
-  });
+    if (!container) return;
+
+    if (user) {
+      const photo = user.photoURL || '';
+      container.innerHTML = `
+        <div class="auth-avatar" id="auth-avatar">
+          <img src="${photo}" alt="avatar" referrerpolicy="no-referrer">
+          <div class="auth-dropdown" id="auth-dropdown">
+            <div class="auth-dropdown-name">${user.displayName || ''}</div>
+            <div class="auth-dropdown-email">${user.email || ''}</div>
+            <button class="auth-dropdown-btn" id="auth-logout">Выйти</button>
+          </div>
+        </div>
+      `;
+      document.getElementById('auth-logout').onclick = () => auth.signOut();
+      document.getElementById('auth-avatar').onclick = (e) => {
+        e.stopPropagation();
+        document.getElementById('auth-dropdown').classList.toggle('open');
+      };
+      document.onclick = () => {
+        const dd = document.getElementById('auth-dropdown');
+        if (dd) dd.classList.remove('open');
+      };
+    } else {
+      container.innerHTML = `<button class="auth-login-btn" id="auth-login">Войти</button>`;
+      document.getElementById('auth-login').onclick = () => auth.signInWithPopup(provider);
+    }
+
+    if (card) card.classList.toggle('hidden', !user);
+  }
+
+  auth.onAuthStateChanged(updateAuthUI);
 </script>
 
 </body>

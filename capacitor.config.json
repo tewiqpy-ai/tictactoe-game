@@ -21,7 +21,7 @@
       "androidScaleType": "CENTER_CROP"
     },
     "FirebaseAuthentication": {
-      "skipNativeAuth": false,
+      "skipNativeAuth": true,
       "providers": ["google.com"]
     }
   }

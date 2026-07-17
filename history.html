@@ -361,7 +361,14 @@
   async function handleGoogleSignIn() {
     if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.FirebaseAuthentication) {
       try {
-        await window.Capacitor.Plugins.FirebaseAuthentication.signInWithGoogle();
+        const result = await window.Capacitor.Plugins.FirebaseAuthentication.signInWithGoogle();
+        if (result && result.credential) {
+          const credential = firebase.auth.GoogleAuthProvider.credential(
+            result.credential.idToken || null,
+            result.credential.accessToken || null
+          );
+          await auth.signInWithCredential(credential);
+        }
         return;
       } catch (e) {
         console.error('Native Google Sign-In error:', e);

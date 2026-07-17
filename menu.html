@@ -374,7 +374,13 @@
     if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.FirebaseAuthentication) {
       try {
         const result = await window.Capacitor.Plugins.FirebaseAuthentication.signInWithGoogle();
-        // Native plugin handles auth state automatically
+        if (result && result.credential) {
+          const credential = firebase.auth.GoogleAuthProvider.credential(
+            result.credential.idToken || null,
+            result.credential.accessToken || null
+          );
+          await auth.signInWithCredential(credential);
+        }
         return;
       } catch (e) {
         console.error('Native Google Sign-In error:', e);

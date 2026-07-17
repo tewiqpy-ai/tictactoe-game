@@ -274,21 +274,6 @@
     color: var(--o-color);
   }
 
-  .game-card.history-card .game-icon {
-    background: rgba(255, 215, 0, 0.1);
-  }
-  .game-card.history-card::before {
-    background: radial-gradient(circle at 50% 30%, rgba(255,215,0,0.12), transparent 70%);
-  }
-  .game-card.history-card:hover {
-    border-color: #ffd700;
-  }
-  .game-card.history-card .game-badge {
-    background: rgba(255, 215, 0, 0.15);
-    color: #ffd700;
-  }
-  .game-card.hidden { display: none; }
-
 </style>
 </head>
 <body>
@@ -333,16 +318,6 @@
     <div class="game-badge">Скоро</div>
   </div>
 
-  <a href="history.html" class="game-card history-card hidden" id="history-card">
-    <div class="game-icon">
-      <svg viewBox="0 0 100 100" fill="none">
-        <circle cx="50" cy="50" r="38" stroke="#ffd700" stroke-width="6"/>
-        <path d="M50 28 V50 L65 60" stroke="#ffd700" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-    </div>
-    <div class="game-name">История</div>
-    <div class="game-badge">История</div>
-  </a>
 </div>
 
 

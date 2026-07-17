@@ -705,8 +705,6 @@ function setDifficulty(d) {
   document.addEventListener('DOMContentLoaded', () => {
     auth.onAuthStateChanged((user) => {
       savedUser = user;
-      const btn = document.getElementById('btn-history');
-      if (btn) btn.style.display = user ? '' : 'none';
     });
   });
 

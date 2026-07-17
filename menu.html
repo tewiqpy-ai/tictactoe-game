@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Игры для тиктокерских</title>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 <style>
   :root {
     --bg: #0a0e1a;
@@ -321,9 +324,6 @@
 </div>
 
 
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 <script>
   const firebaseConfig = {
     apiKey: "AIzaSyDylaym85cTkafDl5OitpEZKrUuwwJHn_w",
@@ -340,7 +340,6 @@
 
   function updateAuthUI(user) {
     const container = document.getElementById('auth-container');
-    const card = document.getElementById('history-card');
     if (!container) return;
 
     if (user) {
@@ -368,8 +367,6 @@
       container.innerHTML = `<button class="auth-login-btn" id="auth-login">Войти</button>`;
       document.getElementById('auth-login').onclick = () => auth.signInWithPopup(provider);
     }
-
-    if (card) card.classList.toggle('hidden', !user);
   }
 
   auth.onAuthStateChanged(updateAuthUI);

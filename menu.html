@@ -365,8 +365,24 @@
       };
     } else {
       container.innerHTML = `<button class="auth-login-btn" id="auth-login">Войти</button>`;
-      document.getElementById('auth-login').onclick = () => auth.signInWithPopup(provider);
+      document.getElementById('auth-login').onclick = () => handleGoogleSignIn();
     }
+  }
+
+  async function handleGoogleSignIn() {
+    // Check if running in Capacitor (Android app)
+    if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.FirebaseAuthentication) {
+      try {
+        const result = await window.Capacitor.Plugins.FirebaseAuthentication.signInWithGoogle();
+        // Native plugin handles auth state automatically
+        return;
+      } catch (e) {
+        console.error('Native Google Sign-In error:', e);
+        // Fallback to web popup
+      }
+    }
+    // Web fallback
+    auth.signInWithPopup(provider).catch(e => console.error('Web Google Sign-In error:', e));
   }
 
   auth.onAuthStateChanged(updateAuthUI);

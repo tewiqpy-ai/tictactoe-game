@@ -178,9 +178,99 @@
     .stat-card { padding: 10px 6px; }
     .stat-card .stat-value { font-size: 1.2rem; }
   }
+
+  /* Auth */
+  .auth-container {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    z-index: 100;
+  }
+  .auth-login-btn {
+    background: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 8px 16px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.2s;
+  }
+  .auth-login-btn:hover {
+    border-color: var(--x-color);
+    background: rgba(0, 212, 255, 0.05);
+  }
+  .auth-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+    position: relative;
+    border: 2px solid var(--border);
+    overflow: visible;
+    transition: border-color 0.2s;
+  }
+  .auth-avatar:hover {
+    border-color: var(--x-color);
+  }
+  .auth-avatar img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+  }
+  .auth-dropdown {
+    display: none;
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 16px;
+    min-width: 200px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    animation: fadeIn 0.2s ease;
+  }
+  .auth-dropdown.open {
+    display: block;
+  }
+  .auth-dropdown-name {
+    font-size: 0.88rem;
+    font-weight: 700;
+    margin-bottom: 2px;
+  }
+  .auth-dropdown-email {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    margin-bottom: 12px;
+    word-break: break-all;
+  }
+  .auth-dropdown-btn {
+    width: 100%;
+    background: transparent;
+    color: var(--text-dim);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s;
+  }
+  .auth-dropdown-btn:hover {
+    border-color: var(--o-color);
+    color: var(--o-color);
+  }
 </style>
 </head>
 <body>
+
+<div class="auth-container" id="auth-container"></div>
 
 <div class="page-title">История игр</div>
 
@@ -207,7 +297,7 @@
   <div class="loading">Загрузка...</div>
 </div>
 
-<a class="back-btn" href="menu.html">Назад</a>
+<a class="back-btn" href="tictactoe.html">Назад</a>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
@@ -225,6 +315,7 @@
   }
   const auth = firebase.auth();
   const db = firebase.firestore();
+  const provider = new firebase.auth.GoogleAuthProvider();
 
   const RESULT_LABELS = { win: 'Победа', lose: 'Поражение', draw: 'Ничья' };
   const DIFF_LABELS = { easy: 'Лёгкий', medium: 'Средний', hard: 'Невозможный' };
@@ -236,9 +327,54 @@
     return d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
   }
 
-  auth.onAuthStateChanged(async (user) => {
+  function updateAuthUI(user) {
+    const container = document.getElementById('auth-container');
+    if (!container) return;
+
+    if (user) {
+      const photo = user.photoURL || '';
+      container.innerHTML = `
+        <div class="auth-avatar" id="auth-avatar">
+          <img src="${photo}" alt="avatar" referrerpolicy="no-referrer">
+          <div class="auth-dropdown" id="auth-dropdown">
+            <div class="auth-dropdown-name">${user.displayName || ''}</div>
+            <div class="auth-dropdown-email">${user.email || ''}</div>
+            <button class="auth-dropdown-btn" id="auth-logout">Выйти</button>
+          </div>
+        </div>
+      `;
+      document.getElementById('auth-logout').onclick = () => auth.signOut();
+      document.getElementById('auth-avatar').onclick = (e) => {
+        e.stopPropagation();
+        document.getElementById('auth-dropdown').classList.toggle('open');
+      };
+      document.onclick = () => {
+        const dd = document.getElementById('auth-dropdown');
+        if (dd) dd.classList.remove('open');
+      };
+    } else {
+      container.innerHTML = `<button class="auth-login-btn" id="auth-login">Войти</button>`;
+      document.getElementById('auth-login').onclick = () => handleGoogleSignIn();
+    }
+  }
+
+  async function handleGoogleSignIn() {
+    if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.FirebaseAuthentication) {
+      try {
+        await window.Capacitor.Plugins.FirebaseAuthentication.signInWithGoogle();
+        return;
+      } catch (e) {
+        console.error('Native Google Sign-In error:', e);
+      }
+    }
+    auth.signInWithPopup(provider).catch(e => console.error('Web Google Sign-In error:', e));
+  }
+
+  async function loadHistory(user) {
+    const gameList = document.getElementById('game-list');
     if (!user) {
-      document.getElementById('game-list').innerHTML = '<div class="empty-state">Войдите через Google, чтобы видеть историю игр</div>';
+      gameList.innerHTML = '<div class="empty-state">Войдите через Google, чтобы видеть историю игр</div>';
+      document.getElementById('stats-row').style.display = 'none';
       return;
     }
 
@@ -247,7 +383,8 @@
         .orderBy('timestamp', 'desc').limit(50).get();
 
       if (snap.empty) {
-        document.getElementById('game-list').innerHTML = '<div class="empty-state">Пока нет игр. Сыграйте первую!</div>';
+        gameList.innerHTML = '<div class="empty-state">Пока нет игр. Сыграйте первую!</div>';
+        document.getElementById('stats-row').style.display = 'none';
         return;
       }
 
@@ -277,11 +414,16 @@
       document.getElementById('stat-loses').textContent = loses;
       document.getElementById('stat-draws').textContent = draws;
       document.getElementById('stats-row').style.display = 'flex';
-      document.getElementById('game-list').innerHTML = entries.join('');
+      gameList.innerHTML = entries.join('');
     } catch (e) {
       console.error('Load history error:', e);
-      document.getElementById('game-list').innerHTML = '<div class="empty-state">Ошибка загрузки истории</div>';
+      gameList.innerHTML = '<div class="empty-state">Ошибка загрузки истории</div>';
     }
+  }
+
+  auth.onAuthStateChanged(async (user) => {
+    updateAuthUI(user);
+    loadHistory(user);
   });
 </script>
 

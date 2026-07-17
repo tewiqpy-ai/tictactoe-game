@@ -343,6 +343,94 @@
     100% { background: rgba(255, 215, 0, 0.08); }
   }
 
+  /* Auth */
+  .auth-container {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    z-index: 100;
+  }
+  .auth-login-btn {
+    background: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 8px 16px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.2s;
+  }
+  .auth-login-btn:hover {
+    border-color: var(--x-color);
+    background: rgba(0, 212, 255, 0.05);
+  }
+  .auth-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+    position: relative;
+    border: 2px solid var(--border);
+    overflow: visible;
+    transition: border-color 0.2s;
+  }
+  .auth-avatar:hover {
+    border-color: var(--x-color);
+  }
+  .auth-avatar img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+  }
+  .auth-dropdown {
+    display: none;
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 16px;
+    min-width: 200px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    animation: fadeIn 0.2s ease;
+  }
+  .auth-dropdown.open {
+    display: block;
+  }
+  .auth-dropdown-name {
+    font-size: 0.88rem;
+    font-weight: 700;
+    margin-bottom: 2px;
+  }
+  .auth-dropdown-email {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    margin-bottom: 12px;
+    word-break: break-all;
+  }
+  .auth-dropdown-btn {
+    width: 100%;
+    background: transparent;
+    color: var(--text-dim);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s;
+  }
+  .auth-dropdown-btn:hover {
+    border-color: var(--o-color);
+    color: var(--o-color);
+  }
+
   /* Controls */
   .controls {
     margin-top: 24px;
@@ -385,6 +473,8 @@
 </style>
 </head>
 <body>
+
+<div class="auth-container" id="auth-container"></div>
 
 <!-- ═══════ START SCREEN ═══════ -->
 <div class="screen active" id="screen-start">
@@ -435,11 +525,14 @@
     </div>
   </div>
 
+  <div style="margin-top: 12px; display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;">
+    <button class="btn" onclick="window.location.href='history.html'" style="font-size: 0.85rem; padding: 10px 24px;" id="btn-history">История</button>
+  </div>
+
   <button class="btn-start" onclick="startGame()">Начать игру</button>
 
   <div style="margin-top: 16px; display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;">
     <button class="btn" onclick="window.location.href='menu.html'" style="font-size: 0.85rem; padding: 10px 24px;">К играм</button>
-    <button class="btn" onclick="window.location.href='history.html'" style="font-size: 0.85rem; padding: 10px 24px;" id="btn-history">История</button>
   </div>
 </div>
 
@@ -701,10 +794,56 @@ function setDifficulty(d) {
   }
   const auth = firebase.auth();
   const db = firebase.firestore();
+  const provider = new firebase.auth.GoogleAuthProvider();
   let savedUser = null;
+
+  function updateTicTacToeAuthUI(user) {
+    const container = document.getElementById('auth-container');
+    if (!container) return;
+
+    if (user) {
+      const photo = user.photoURL || '';
+      container.innerHTML = `
+        <div class="auth-avatar" id="auth-avatar">
+          <img src="${photo}" alt="avatar" referrerpolicy="no-referrer">
+          <div class="auth-dropdown" id="auth-dropdown">
+            <div class="auth-dropdown-name">${user.displayName || ''}</div>
+            <div class="auth-dropdown-email">${user.email || ''}</div>
+            <button class="auth-dropdown-btn" id="auth-logout">Выйти</button>
+          </div>
+        </div>
+      `;
+      document.getElementById('auth-logout').onclick = () => auth.signOut();
+      document.getElementById('auth-avatar').onclick = (e) => {
+        e.stopPropagation();
+        document.getElementById('auth-dropdown').classList.toggle('open');
+      };
+      document.onclick = () => {
+        const dd = document.getElementById('auth-dropdown');
+        if (dd) dd.classList.remove('open');
+      };
+    } else {
+      container.innerHTML = `<button class="auth-login-btn" id="auth-login">Войти</button>`;
+      document.getElementById('auth-login').onclick = () => handleGoogleSignIn();
+    }
+  }
+
+  async function handleGoogleSignIn() {
+    if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.FirebaseAuthentication) {
+      try {
+        await window.Capacitor.Plugins.FirebaseAuthentication.signInWithGoogle();
+        return;
+      } catch (e) {
+        console.error('Native Google Sign-In error:', e);
+      }
+    }
+    auth.signInWithPopup(provider).catch(e => console.error('Web Google Sign-In error:', e));
+  }
+
   document.addEventListener('DOMContentLoaded', () => {
     auth.onAuthStateChanged((user) => {
       savedUser = user;
+      updateTicTacToeAuthUI(user);
     });
   });
 

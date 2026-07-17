@@ -553,6 +553,7 @@ function highlightWin(line) {
 function endGame(result) {
   gameOver = true;
   locked = true;
+  if (window.saveGameResult) window.saveGameResult(result);
   if (result === 'player') {
     setStatus('Вы выиграли!', 'win');
     scores.player++;
@@ -682,6 +683,25 @@ function setDifficulty(d) {
   });
   resetGame();
 }
+</script>
+<script type="module">
+  import { auth, db } from './firebase-config.js';
+  import { addDoc, collection, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+  import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+
+  let savedUser = null;
+  onAuthStateChanged(auth, (user) => { savedUser = user; });
+
+  window.saveGameResult = function(result) {
+    if (!savedUser) return;
+    const gameResult = result === 'player' ? 'win' : result === 'bot' ? 'lose' : 'draw';
+    addDoc(collection(db, 'users', savedUser.uid, 'games'), {
+      result: gameResult,
+      difficulty,
+      playerMark,
+      timestamp: serverTimestamp()
+    }).catch(e => console.error('Save game error:', e));
+  };
 </script>
 </body>
 </html>

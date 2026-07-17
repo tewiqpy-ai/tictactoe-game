@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>История игр</title>
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --surface: #141929;
+    --border: #1e2540;
+    --x-color: #00d4ff;
+    --o-color: #ff3d7f;
+    --text: #e0e6f0;
+    --text-dim: #5a6480;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 24px;
+    overflow-x: hidden;
+  }
+
+  .page-title {
+    font-size: 1.6rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    margin-bottom: 28px;
+    text-align: center;
+    background: linear-gradient(90deg, #4a5580, #e0e6f0, #ffffff, #e0e6f0, #4a5580);
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: shimmer 3s ease-in-out infinite;
+  }
+
+  @keyframes shimmer {
+    0%, 100% { background-position: 200% center; }
+    50% { background-position: 0% center; }
+  }
+
+  /* Stats */
+  .stats-row {
+    display: flex;
+    gap: 12px;
+    width: 100%;
+    max-width: 440px;
+    margin-bottom: 28px;
+  }
+  .stat-card {
+    flex: 1;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 10px;
+    text-align: center;
+  }
+  .stat-card .stat-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+  .stat-card .stat-label {
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-dim);
+    margin-top: 2px;
+  }
+  .stat-card.wins .stat-value { color: #4caf50; }
+  .stat-card.loses .stat-value { color: var(--o-color); }
+  .stat-card.draws .stat-value { color: var(--text-dim); }
+  .stat-card.total .stat-value { color: var(--x-color); }
+
+  /* Game list */
+  .game-list {
+    width: 100%;
+    max-width: 440px;
+  }
+  .game-entry {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 18px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    animation: fadeIn 0.3s ease backwards;
+  }
+  .game-entry:nth-child(1) { animation-delay: 0.05s; }
+  .game-entry:nth-child(2) { animation-delay: 0.1s; }
+  .game-entry:nth-child(3) { animation-delay: 0.15s; }
+
+  .result-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .result-dot.win { background: #4caf50; }
+  .result-dot.lose { background: var(--o-color); }
+  .result-dot.draw { background: var(--text-dim); }
+
+  .game-info {
+    flex: 1;
+    min-width: 0;
+  }
+  .game-info .game-result {
+    font-size: 0.88rem;
+    font-weight: 700;
+  }
+  .game-info .game-result.win { color: #4caf50; }
+  .game-info .game-result.lose { color: var(--o-color); }
+  .game-info .game-result.draw { color: var(--text-dim); }
+  .game-info .game-meta {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    margin-top: 2px;
+  }
+  .game-date {
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    white-space: nowrap;
+  }
+
+  .empty-state {
+    text-align: center;
+    color: var(--text-dim);
+    padding: 40px 20px;
+    font-size: 0.9rem;
+  }
+
+  .loading {
+    text-align: center;
+    color: var(--text-dim);
+    padding: 40px 20px;
+    font-size: 0.85rem;
+  }
+
+  .back-btn {
+    background: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 24px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s;
+    text-decoration: none;
+    display: inline-block;
+    margin-top: 20px;
+  }
+  .back-btn:hover {
+    border-color: var(--x-color);
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 400px) {
+    body { padding: 28px 16px; }
+    .page-title { font-size: 1.3rem; }
+    .stats-row { gap: 8px; }
+    .stat-card { padding: 10px 6px; }
+    .stat-card .stat-value { font-size: 1.2rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page-title">История игр</div>
+
+<div class="stats-row" id="stats-row" style="display:none">
+  <div class="stat-card total">
+    <div class="stat-value" id="stat-total">0</div>
+    <div class="stat-label">Всего</div>
+  </div>
+  <div class="stat-card wins">
+    <div class="stat-value" id="stat-wins">0</div>
+    <div class="stat-label">Побед</div>
+  </div>
+  <div class="stat-card loses">
+    <div class="stat-value" id="stat-loses">0</div>
+    <div class="stat-label">Поражений</div>
+  </div>
+  <div class="stat-card draws">
+    <div class="stat-value" id="stat-draws">0</div>
+    <div class="stat-label">Ничьих</div>
+  </div>
+</div>
+
+<div class="game-list" id="game-list">
+  <div class="loading">Загрузка...</div>
+</div>
+
+<a class="back-btn" href="menu.html">Назад</a>
+
+<script type="module">
+  import { auth, db } from './firebase-config.js';
+  import { collection, query, orderBy, limit, getDocs } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+  import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+
+  const RESULT_LABELS = { win: 'Победа', lose: 'Поражение', draw: 'Ничья' };
+  const DIFF_LABELS = { easy: 'Лёгкий', medium: 'Средний', hard: 'Невозможный' };
+  const SIDE_LABELS = { X: 'Крестики', O: 'Нолики' };
+
+  function formatDate(ts) {
+    if (!ts) return '';
+    const d = ts.toDate();
+    return d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+  }
+
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) {
+      document.getElementById('game-list').innerHTML = '<div class="empty-state">Войдите через Google, чтобы видеть историю игр</div>';
+      return;
+    }
+
+    try {
+      const q = query(
+        collection(db, 'users', user.uid, 'games'),
+        orderBy('timestamp', 'desc'),
+        limit(50)
+      );
+      const snap = await getDocs(q);
+
+      if (snap.empty) {
+        document.getElementById('game-list').innerHTML = '<div class="empty-state">Пока нет игр. Сыграйте первую!</div>';
+        return;
+      }
+
+      let wins = 0, loses = 0, draws = 0;
+      const entries = [];
+
+      snap.forEach(doc => {
+        const g = doc.data();
+        if (g.result === 'win') wins++;
+        else if (g.result === 'lose') loses++;
+        else draws++;
+
+        entries.push(`
+          <div class="game-entry">
+            <div class="result-dot ${g.result}"></div>
+            <div class="game-info">
+              <div class="game-result ${g.result}">${RESULT_LABELS[g.result] || g.result}</div>
+              <div class="game-meta">${DIFF_LABELS[g.difficulty] || g.difficulty} · ${SIDE_LABELS[g.playerMark] || g.playerMark}</div>
+            </div>
+            <div class="game-date">${formatDate(g.timestamp)}</div>
+          </div>
+        `);
+      });
+
+      document.getElementById('stat-total').textContent = wins + loses + draws;
+      document.getElementById('stat-wins').textContent = wins;
+      document.getElementById('stat-loses').textContent = loses;
+      document.getElementById('stat-draws').textContent = draws;
+      document.getElementById('stats-row').style.display = 'flex';
+      document.getElementById('game-list').innerHTML = entries.join('');
+    } catch (e) {
+      console.error('Load history error:', e);
+      document.getElementById('game-list').innerHTML = '<div class="empty-state">Ошибка загрузки истории</div>';
+    }
+  });
+</script>
+
+</body>
+</html>
